@@ -1,12 +1,12 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
+	import { writable, type Writable } from 'svelte/store';
 	import { Midi } from '@tonejs/midi';
-	// Mental note: I might need to use https://www.npmjs.com/package/tone?activeTab=dependencies later on
 
 	let midiAccess: any;
-	let outputDevices: any;
-	let selectedOutputDevice: any;
-	let midiFile: any;
+	let midiDevices: any;
+	let selectedOutputDevice = writable();
+	let tracks = writable([]);
 	let isPlaying: boolean = false;
 	let isLoading: boolean = false;
 
@@ -17,7 +17,7 @@
 			midiAccess = await navigator.requestMIDIAccess();
 
 			// Get all MIDI output devices
-			outputDevices = Array.from(midiAccess.outputs.values());
+			midiDevices = Array.from(midiAccess.outputs.values());
 		}
 	});
 
@@ -37,7 +37,7 @@
 				isLoading = true;
 
 				const midi = new Midi(buffer);
-				const tracks = midi.tracks.map((track) =>
+				const parsedTracks = midi.tracks.map((track) =>
 					track.notes.map((note) => ({
 						time: note.time,
 						duration: note.duration,
@@ -47,7 +47,10 @@
 					}))
 				);
 
-				console.log('Parsed MIDI file using @tonejs/midi:', tracks);
+				console.log('Parsed MIDI file using @tonejs/midi:', parsedTracks);
+
+				// Set parsed MIDI file tracks to tracks store
+				tracks.set(parsedTracks);
 			} catch (error) {
 				console.error('Error parsing MIDI file using @tonejs/midi:', error);
 			} finally {
@@ -57,24 +60,33 @@
 		reader.readAsArrayBuffer(file);
 	}
 
-	function handleDeviceSelection(outputDevice: any) {
+	function handleDeviceOutput(outputDevice: any) {
 		// Select MIDI output device
-		selectedOutputDevice = outputDevice;
-		console.log('Selected output device:', selectedOutputDevice.name);
+		$selectedOutputDevice = outputDevice;
+		console.log('Selected output device:', $selectedOutputDevice.name);
 	}
 
 	async function playMidiFile() {
-		if (!isPlaying && midiFile) {
+		console.log('playMidiFile called');
+		console.log('isPlaying:', isPlaying);
+		console.log('selectedOutputDevice:', $selectedOutputDevice);
+		console.log('tracks:', $tracks);
+
+		if (!isPlaying && $tracks.length > 0 && $selectedOutputDevice) {
 			isPlaying = true;
-			const track = midiFile.tracks[0];
+			const track = $tracks[0];
 			const startTime = performance.now();
 			let lastEventTime = 0;
 			for (const event of track) {
+				console.log('event:', event);
+				console.log('event.time:', event.time);
+				console.log('event.data:', event.data); //! event data is undefined that is why it is not playing (?)
+
 				const deltaTime = event.deltaTime;
 				await new Promise((resolve) => setTimeout(resolve, deltaTime));
 				lastEventTime += deltaTime;
 				if (event.type === 'channel') {
-					selectedOutputDevice.send(event.data);
+					$selectedOutputDevice.send(event.data);
 				}
 			}
 			isPlaying = false;
@@ -82,25 +94,12 @@
 	}
 </script>
 
-<h1>Select MIDI output device:</h1>
-{#if outputDevices}
-	<ul>
-		{#each outputDevices as outputDevice}
-			<li>
-				<button class="btn" on:click={() => handleDeviceSelection(outputDevice)}>
-					{outputDevice.name}
-				</button>
-			</li>
-		{/each}
-	</ul>
-{/if}
-
-<h1>Select MIDI file:</h1>
+<h2>Select MIDI file:</h2>
 <input type="file" accept=".mid" on:change={handleFileInput} />
 
 {#if isLoading}
 	<p>Loading MIDI file...</p>
-{:else if !midiFile}
+{:else if !$tracks.length}
 	<p>No MIDI file selected.</p>
 {:else}
 	<button class="btn" on:click={playMidiFile} disabled={isPlaying}>
@@ -110,4 +109,17 @@
 			Play MIDI file
 		{/if}
 	</button>
+{/if}
+
+<h2>Select MIDI output device:</h2>
+{#if midiDevices}
+	<ul>
+		{#each midiDevices as outputDevice}
+			<li>
+				<button class="btn" on:click={() => handleDeviceOutput(outputDevice)}>
+					{outputDevice.name}
+				</button>
+			</li>
+		{/each}
+	</ul>
 {/if}
