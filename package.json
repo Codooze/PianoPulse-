@@ -39,6 +39,11 @@
 	},
 	"type": "module",
 	"dependencies": {
+		"@sightread/jasmid.ts": "^2.1.5",
+		"@tonejs/midi": "^2.0.28",
+		"midi-file": "^1.2.4",
+		"midi-parser-js": "^4.0.4",
+		"midifile": "^2.0.0",
 		"webmidi": "^3.1.6"
 	}
 }
