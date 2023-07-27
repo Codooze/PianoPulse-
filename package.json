@@ -39,6 +39,10 @@
 	},
 	"type": "module",
 	"dependencies": {
-		"@tonejs/midi": "^2.0.28"
+		"@magenta/music": "^1.23.1",
+		"@tonejs/midi": "^2.0.28",
+		"html-midi-player": "^1.5.0",
+		"midi-file": "^1.2.4",
+		"midi-player-js": "^2.0.16"
 	}
 }
