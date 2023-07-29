@@ -9,9 +9,6 @@
 
 	let midiOutputDevices: any;
 	let selectedOutputDevice: any;
-	let tracks: any;
-	let isPlaying = false;
-
 	onMount(async () => {
 		// Check if Web MIDI API is available
 		if (navigator.requestMIDIAccess) {
@@ -61,7 +58,6 @@
 	}
 
 	//------------------ Play MIDI file logic ------------------//
-	let audioContext: any;
 	async function handleOutputDeviceSelection(outputDevice: any) {
 		// Select MIDI output device
 		selectedOutputDevice = outputDevice;
@@ -70,8 +66,9 @@
 
 	let file: any;
 	let fileUrl: any;
-	async function handleFileSelection(event: any) {
-		file = event.target.files;
+	let stylesheet: any;
+	function handleFileSelection(event: any) {
+		file = event.target.files[0];
 		console.log('handleFileSelection', file);
 
 		if (file) {
@@ -81,14 +78,13 @@
 				const blob = new Blob([arrayBuffer], { type: 'audio/midi' });
 				fileUrl = URL.createObjectURL(blob);
 				console.log('playMidi', fileUrl);
-				// isPlaying = true;
-				// selectedOutputDevice.play(blob);
+				//Might want to check MidiPlayer component for another example of reading a midi file
 			};
-			reader.readAsArrayBuffer(file[0]);
 		}
 	}
 
 	async function playMidi() {}
+	let midUrl = 'Solo.mid';
 </script>
 
 {#if midiDevices && !selectedInputDevice}
@@ -113,6 +109,7 @@
 	<SlideToggle name="toggle-MIDI" bind:checked={toggleMIDI}>Listen Midi Inputs</SlideToggle>
 {/if}
 
+<!--# output device selection -->
 {#if midiOutputDevices && !selectedOutputDevice}
 	<h2>Select MIDI output device:</h2>
 	<ul>
@@ -135,4 +132,7 @@
 	<input type="file" accept=".mid" on:change={handleFileSelection} />
 	<button class="variant-filled-primary" on:click={playMidi}>Play</button>
 {/if}
+<!---->
 
+<input type="file" accept=".mid" on:change={handleFileSelection} />
+<button class="btn variant-filled-primary" on:click={playMidi}>Play</button>
