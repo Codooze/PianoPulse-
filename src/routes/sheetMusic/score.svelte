@@ -10,7 +10,7 @@
 			backend: 'svg',
 			drawTitle: true
 		});
-		const loadPromise = osmd.load('score.xml');
+		const loadPromise = osmd.load('Gym.mxl');
 
 		loadPromise.then(() => {
 			osmd.render();
