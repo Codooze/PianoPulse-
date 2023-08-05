@@ -4,7 +4,7 @@
 
 	let musicXML: string | File = '';
 	let running = '';
-	let isMXL = false;
+	let isMXL = true;
 	async function onChangeHandler(e: Event): Promise<void> {
 		const files = (e.target as HTMLInputElement).files;
 		console.log(files);

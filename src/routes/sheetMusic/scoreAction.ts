@@ -1,5 +1,14 @@
 import { OpenSheetMusicDisplay } from 'opensheetmusicdisplay';
 //TODO Handle errors for type of file submission
+/*
+APROACHES
+🖌️For coloring notes as well as moving the cursor I could use a new function or functions in the update function
+*/
+class MyOpenSheetMusicDisplay extends OpenSheetMusicDisplay {
+	getGraphic() {
+		return this.graphic;
+	}
+}
 export function scoreAction(
 	node: HTMLElement,
 	options: {
@@ -8,7 +17,7 @@ export function scoreAction(
 		running: string;
 	}
 ) {
-	const osmd = new OpenSheetMusicDisplay(node);
+	const osmd = new MyOpenSheetMusicDisplay(node);
 	osmd.setOptions({
 		backend: 'svg',
 		drawTitle: true,
@@ -48,6 +57,16 @@ export function scoreAction(
 			const loadPromise = osmd.load(musicXml, options.tempTitle);
 			loadPromise.then(() => {
 				osmd.render();
+
+				const graphicalNote =
+					osmd.getGraphic().measureList[0][0].staffEntries[0].graphicalVoiceEntries[0].notes[0];
+				graphicalNote.getSVGGElement().children[0].children[0].children[0].style.fill = '#FFFFFF'; // notehead
+				// osmd.cursor
+				// 	.GNotesUnderCursor()[0]
+				// 	.getSVGGElement().children[0].children[0].children[0].style.stroke = '#FF0000'; // stem
+				// osmd.cursor
+				// 	.GNotesUnderCursor()[0]
+				// 	.getSVGGElement().children[0].children[1].children[0].style.fill = '#FF0000'; // notehead
 			});
 		}
 	}
