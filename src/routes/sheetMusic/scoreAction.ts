@@ -1,10 +1,5 @@
 import { OpenSheetMusicDisplay } from 'opensheetmusicdisplay';
-
-/*
-Aproches:
-- CURRENTLY ver porque no se puede retirar correctamente la url en osmd.load
-*/
-
+//TODO Handle errors for type of file submission
 export function scoreAction(
 	node: HTMLElement,
 	options: {
@@ -17,12 +12,14 @@ export function scoreAction(
 	osmd.setOptions({
 		backend: 'svg',
 		drawTitle: true,
-		drawUpToMeasureNumber: 10, // Draw up to measure 10
-		drawUpToPageNumber: 2
+		// drawUpToMeasureNumber: 10, // Draw up to measure 10
+		// drawUpToPageNumber: 2,
+		drawingParameters: 'compact',
+		followCursor: true
+		// renderSingleHorizontalStaffline
 	});
 	//tempTitle is used as the title for the piece if there is no title in the XML.
 	function updateScore() {
-		console.log('loadPromise 🤡', osmd);
 		console.log(options.xml);
 
 		if (!options.running) {
