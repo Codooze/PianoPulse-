@@ -42,7 +42,7 @@
 	"dependencies": {
 		"@tonejs/midi": "^2.0.28",
 		"jszip": "^3.10.1",
-		"opensheetmusicdisplay": "^1.8.2",
+		"osmd-extended": "^1.8.2",
 		"tone": "^14.7.77"
 	}
 }

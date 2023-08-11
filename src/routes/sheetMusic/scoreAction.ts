@@ -1,4 +1,5 @@
-import { OpenSheetMusicDisplay } from 'opensheetmusicdisplay';
+// import { OpenSheetMusicDisplay } from 'opensheetmusicdisplay';
+import { OpenSheetMusicDisplay } from 'osmd-extended';
 //TODO Handle errors for type of file submission
 /*
 APROACHES
